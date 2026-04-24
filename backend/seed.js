@@ -3,13 +3,11 @@
  * Usage: node seed.js
  */
 require('dotenv').config();
-const mongoose = require('mongoose');
 const Profile  = require('./models/Profile');
 const Project  = require('./models/Project');
 const Skill    = require('./models/Skill');
 const Admin    = require('./models/Admin');
-
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/portfolio_db';
+const { connectDB } = require('./config/db');
 
 const defaultProjects = [
   {
@@ -88,8 +86,7 @@ const defaultSkills = [
 
 async function seed() {
   try {
-    await mongoose.connect(MONGO_URI);
-    console.log('✅ Connected to MongoDB');
+    await connectDB();
 
     // Clear existing data
     await Promise.all([
@@ -137,6 +134,7 @@ async function seed() {
     }
 
     console.log('\n🎉 Database seeded successfully!');
+    await require('mongoose').connection.close();
     process.exit(0);
   } catch (err) {
     console.error('❌ Seed error:', err.message);
