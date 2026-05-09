@@ -1,6 +1,11 @@
 const Message  = require('../models/Message');
 const nodemailer = require('nodemailer');
 
+function getSmtpSecureFlag() {
+  const port = Number(process.env.SMTP_PORT) || 587;
+  return port === 465;
+}
+
 // Helper: send email notification (optional)
 const sendEmailNotification = async (msg) => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return; // skip if not configured
@@ -8,8 +13,11 @@ const sendEmailNotification = async (msg) => {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
+      secure: getSmtpSecureFlag(),
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
     await transporter.sendMail({
       from: `"Portfolio Contact" <${process.env.SMTP_USER}>`,

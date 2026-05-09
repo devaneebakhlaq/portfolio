@@ -7,6 +7,9 @@ require('dotenv').config();
 
 const app = express();
 
+// Railway and similar platforms sit behind a proxy, so trust the forwarded IP.
+app.set('trust proxy', 1);
+
 const allowedOrigins = (process.env.FRONTEND_URL || '')
   .split(',')
   .map((origin) => origin.trim())
