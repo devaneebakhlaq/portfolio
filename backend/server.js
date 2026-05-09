@@ -7,9 +7,36 @@ require('dotenv').config();
 
 const app = express();
 
+const allowedOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const localOrigins = ['http://localhost:3000', 'http://localhost:4173', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:4173', 'http://127.0.0.1:5173'];
+const surgeOrigins = ['https://aneeb.surge.sh'];
+
 // Security & middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (
+        allowedOrigins.includes(origin) ||
+        (allowedOrigins.length === 0 && (localOrigins.includes(origin) || surgeOrigins.includes(origin))) ||
+        origin.endsWith('.surge.sh')
+      ) {
+        return callback(null, true);
+      }
+
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
 
