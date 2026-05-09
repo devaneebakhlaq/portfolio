@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const BASE_URL = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) || 'https://portfolio-production-8c5e.up.railway.app/api';
+const LOCAL_BASE_URL = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) || 'http://localhost:5000/api';
+const PRODUCTION_BASE_URL = 'https://portfolio-production-8c5e.up.railway.app/api';
+
+const BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? LOCAL_BASE_URL
+  : PRODUCTION_BASE_URL;
 
 const api = axios.create({ baseURL: BASE_URL, timeout: 10000 });
 
