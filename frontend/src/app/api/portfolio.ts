@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) || 'http://localhost:5000/api';
+const BASE_URL = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) || 'https://portfolio-production-8c5e.up.railway.app/api';
 
 const api = axios.create({ baseURL: BASE_URL, timeout: 10000 });
 
